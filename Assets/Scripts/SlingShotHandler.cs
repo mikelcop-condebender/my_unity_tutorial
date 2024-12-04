@@ -12,12 +12,24 @@ public class SlingShotHandler : MonoBehaviour
 
     [SerializeField] private float maxDistance = 3.5f;
     private Vector2 slingShotLinesPosition;
-
+    private bool clickedWithinArea;
+    [SerializeField] private SlingShotArea slingShotArea;
 
    void Update()
     {
-       if(Mouse.current.leftButton.isPressed){
+        if(Mouse.current.leftButton.wasPressedThisFrame && slingShotArea.isWithinSlingShotArea())
+        {
+            Debug.Log("=====================");
+            clickedWithinArea = true;
+        }
+       if(Mouse.current.leftButton.isPressed && clickedWithinArea){
+         Debug.Log("=====================");
         DrawSlingShot();
+       }
+
+       if(Mouse.current.leftButton.wasReleasedThisFrame)
+       {
+        clickedWithinArea = false;
        }
         
     }
