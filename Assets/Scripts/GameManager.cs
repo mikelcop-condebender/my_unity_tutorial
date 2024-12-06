@@ -1,13 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
    public static GameManager instance;
    public int MaxNumberOfShots = 3;
    [SerializeField] private float _secondsToWaitBeforeDeathCheck = 3f; 
-
+   [SerializeField] private GameObject _restartGameObject;
    private int _usedNumberOfShots;
    private IconHandler _iconHandler;
    private List<Baddie> _baddies = new List<Baddie>();
@@ -72,11 +72,12 @@ public class GameManager : MonoBehaviour
 
    private void WinGame()
    {
-      Debug.Log("Win Game");
+      _restartGameObject.SetActive(true);
    }
 
    private void LoseGame()
    {
    Debug.Log("Lose Game");
+   SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
    }
 }
