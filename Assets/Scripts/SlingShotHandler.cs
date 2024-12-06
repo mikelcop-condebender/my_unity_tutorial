@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 
 public class SlingShotHandler : MonoBehaviour
 {
+
     [Header("Line Renderers")]
     [SerializeField] private LineRenderer leftLineRenderer;
     [SerializeField] private LineRenderer rightLineRenderer;
@@ -25,18 +26,19 @@ public class SlingShotHandler : MonoBehaviour
     [Header("Bird")]
     [SerializeField] AngieBird _angieBirdPrefab;
     [SerializeField] float _angieBirdPositionOffset = 2f;
-    
-    private AngieBird _spawnedAngieBird;    
-    
+
+    private AngieBird _spawnedAngieBird;
+
     private Vector2 slingShotLinesPosition;
 
     private Vector2 _direction;
     private Vector2 _directionNormalized;
     private bool clickedWithinArea;
     private bool _birdOnSlingShot;
-    
-    private void Awake(){
-        if(leftLineRenderer.enabled && rightLineRenderer.enabled)
+
+    private void Awake()
+    {
+        if (leftLineRenderer.enabled && rightLineRenderer.enabled)
         {
             leftLineRenderer.enabled = false;
             rightLineRenderer.enabled = false;
@@ -44,29 +46,39 @@ public class SlingShotHandler : MonoBehaviour
         SpawnAngieBird();
     }
 
-   private void Update()
+    private void Update()
     {
-        if(Mouse.current.leftButton.wasPressedThisFrame && slingShotArea.isWithinSlingShotArea())
+        if (Mouse.current.leftButton.wasPressedThisFrame && slingShotArea.isWithinSlingShotArea())
         {
             clickedWithinArea = true;
         }
-       if(Mouse.current.leftButton.isPressed && clickedWithinArea && _birdOnSlingShot){
-        DrawSlingShot();
-        PositionAndRotateAngieBird();
-       }
+        if (Mouse.current.leftButton.isPressed && clickedWithinArea && _birdOnSlingShot)
+        {
+            DrawSlingShot();
+            PositionAndRotateAngieBird();
+        }
 
-       if(Mouse.current.leftButton.wasReleasedThisFrame && _birdOnSlingShot)
-       {
-        clickedWithinArea = false;
-        _spawnedAngieBird.LaunchBird(_direction, _shotForce);
-        _birdOnSlingShot = false;
-        SetLines(centerPosition.position);
-        StartCoroutine(SpawnAngieBirdAfterTime());
-       }
-        
+        if (Mouse.current.leftButton.wasReleasedThisFrame && _birdOnSlingShot)
+        {
+            if (GameManager.instance.HasEnoughShot())
+            {
+                clickedWithinArea = false;
+                _spawnedAngieBird.LaunchBird(_direction, _shotForce);
+                GameManager.instance.UseShot();
+                _birdOnSlingShot = false;
+                SetLines(centerPosition.position);
+                if (GameManager.instance.HasEnoughShot())
+                {
+                    StartCoroutine(SpawnAngieBirdAfterTime());
+                }
+
+
+            }
+        }
+
     }
 
-#region Sling Shot Methods
+    #region Sling Shot Methods
     private void DrawSlingShot()
     {
         Vector3 touchPosition = Camera.main.ScreenToWorldPoint(Mouse.current.position.ReadValue());
@@ -76,8 +88,9 @@ public class SlingShotHandler : MonoBehaviour
         _directionNormalized = _direction.normalized;
     }
 
-    private void SetLines(Vector2 touchPosition){
-        if(!leftLineRenderer.enabled && !rightLineRenderer.enabled)
+    private void SetLines(Vector2 touchPosition)
+    {
+        if (!leftLineRenderer.enabled && !rightLineRenderer.enabled)
         {
             leftLineRenderer.enabled = true;
             rightLineRenderer.enabled = true;
@@ -89,30 +102,31 @@ public class SlingShotHandler : MonoBehaviour
         rightLineRenderer.SetPosition(0, touchPosition);
         rightLineRenderer.SetPosition(1, rightStartPosition.position);
     }
-#endregion
+    #endregion
 
-#region Angie Bird Methods
-private void SpawnAngieBird()
-{
-    SetLines(idlePosition.position);
-    Vector2 dir = (centerPosition.position - idlePosition.position).normalized;
-    Vector2 spawnPosition = (Vector2)idlePosition.position + dir * _angieBirdPositionOffset;
-    _spawnedAngieBird = Instantiate(_angieBirdPrefab, spawnPosition, Quaternion.identity);
-    _spawnedAngieBird.transform.right = dir;
-    _birdOnSlingShot = true;
-}
+    #region Angie Bird Methods
+    private void SpawnAngieBird()
+    {
+        SetLines(idlePosition.position);
+        Vector2 dir = (centerPosition.position - idlePosition.position).normalized;
+        Vector2 spawnPosition = (Vector2)idlePosition.position + dir * _angieBirdPositionOffset;
+        _spawnedAngieBird = Instantiate(_angieBirdPrefab, spawnPosition, Quaternion.identity);
+        _spawnedAngieBird.transform.right = dir;
+        _birdOnSlingShot = true;
 
-private void PositionAndRotateAngieBird()
-{
-    _spawnedAngieBird.transform.position = slingShotLinesPosition + _directionNormalized * _angieBirdPositionOffset;
-    _spawnedAngieBird.transform.right = _directionNormalized;
-}
+    }
 
-private IEnumerator SpawnAngieBirdAfterTime()
-{
-    yield return new WaitForSeconds(_timeBetweenReSpawns);
-   SpawnAngieBird();
-}
+    private void PositionAndRotateAngieBird()
+    {
+        _spawnedAngieBird.transform.position = slingShotLinesPosition + _directionNormalized * _angieBirdPositionOffset;
+        _spawnedAngieBird.transform.right = _directionNormalized;
+    }
 
-#endregion
+    private IEnumerator SpawnAngieBirdAfterTime()
+    {
+        yield return new WaitForSeconds(_timeBetweenReSpawns);
+        SpawnAngieBird();
+    }
+
+    #endregion
 }
