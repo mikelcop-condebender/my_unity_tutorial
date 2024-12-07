@@ -1,6 +1,8 @@
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using DG.Tweening;
 
 public class SlingShotHandler : MonoBehaviour
 {
@@ -15,17 +17,27 @@ public class SlingShotHandler : MonoBehaviour
     [SerializeField] private Transform centerPosition;
     [SerializeField] private Transform idlePosition;
 
+    [SerializeField] private Transform _elasticTransform;
+
     [Header("Sling Shot Stats")]
     [SerializeField] private float maxDistance = 3.5f;
     [SerializeField] private float _shotForce = 5f;
     [SerializeField] private float _timeBetweenReSpawns = 2f;
+    [SerializeField] private float _elasticDivider = 1.2f;
+    [SerializeField] private AnimationCurve _elasticCurve;
 
     [Header("Scripts")]
     [SerializeField] private SlingShotArea slingShotArea;
 
     [Header("Bird")]
     [SerializeField] AngieBird _angieBirdPrefab;
-    [SerializeField] float _angieBirdPositionOffset = 2f;
+    [SerializeField] private float _angieBirdPositionOffset = 2f;
+
+    [Header("Sound")]
+    [SerializeField] private AudioClip _elasticPulledClip;
+    [SerializeField] private AudioClip[] _elasticReleasedClips;
+
+
 
     private AngieBird _spawnedAngieBird;
 
@@ -35,9 +47,13 @@ public class SlingShotHandler : MonoBehaviour
     private Vector2 _directionNormalized;
     private bool clickedWithinArea;
     private bool _birdOnSlingShot;
+    private AudioSource _audioSource;
+
 
     private void Awake()
     {
+
+        _audioSource = GetComponent<AudioSource>();
         if (leftLineRenderer.enabled && rightLineRenderer.enabled)
         {
             leftLineRenderer.enabled = false;
@@ -50,8 +66,10 @@ public class SlingShotHandler : MonoBehaviour
     {
         if (InputManager.WasLeftMouseButtonPressed && slingShotArea.isWithinSlingShotArea())
         {
-            Debug.Log("SHOT");
             clickedWithinArea = true;
+            if(_birdOnSlingShot){
+                SoundManager.instance.PlayClip(_elasticPulledClip, _audioSource);
+            }
         }
         if (InputManager.isLeftMousePressed && clickedWithinArea && _birdOnSlingShot)
         {
@@ -64,10 +82,11 @@ public class SlingShotHandler : MonoBehaviour
             if (GameManager.instance.HasEnoughShot() && clickedWithinArea)
             {
                 clickedWithinArea = false;
-                _spawnedAngieBird.LaunchBird(_direction, _shotForce);
-                GameManager.instance.UseShot();
                 _birdOnSlingShot = false;
-                SetLines(centerPosition.position);
+                _spawnedAngieBird.LaunchBird(_direction, _shotForce);
+                SoundManager.instance.PlayRandomClip(_elasticReleasedClips, _audioSource);
+                GameManager.instance.UseShot();
+                AnimateSlingShot();
                 if (GameManager.instance.HasEnoughShot())
                 {
                     StartCoroutine(SpawnAngieBirdAfterTime());
@@ -130,4 +149,28 @@ public class SlingShotHandler : MonoBehaviour
     }
 
     #endregion
+
+    private void AnimateSlingShot()
+    {
+        
+        _elasticTransform.position = leftLineRenderer.GetPosition(0);
+        float dist = Vector2.Distance(_elasticTransform.position, centerPosition.position);
+        float time = dist / _elasticDivider;
+
+        _elasticTransform.DOMove(centerPosition.position, time).SetEase(_elasticCurve);
+        StartCoroutine(AnimateSlingShotLines(_elasticTransform, time));
+    }
+
+    private IEnumerator AnimateSlingShotLines(Transform trans, float time)
+    {
+        float elapseTime = 0f;
+        while(elapseTime < time)
+        {
+            elapseTime += Time.deltaTime;
+            SetLines(trans.position);
+            yield return null;
+        }
+    }
+
 }
+
