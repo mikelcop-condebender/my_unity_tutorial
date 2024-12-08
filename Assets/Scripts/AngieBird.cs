@@ -4,15 +4,18 @@ using UnityEngine;
 
 public class AngieBird : MonoBehaviour
 {
+    [SerializeField] private AudioClip _hitClip;
     private Rigidbody2D _rb;
     private CircleCollider2D _circleCollider;
+    private AudioSource _audioSource;
 
     private bool _hasBeenLaunched;
     private bool _shouldFaceVelocityDirection;
 
     private void Awake(){
         _rb = GetComponent<Rigidbody2D>();
-        _circleCollider = GetComponent<CircleCollider2D>();       
+        _circleCollider = GetComponent<CircleCollider2D>();      
+        _audioSource = GetComponent<AudioSource>(); 
     }
 
     private void Start()
@@ -42,5 +45,7 @@ public class AngieBird : MonoBehaviour
     public void OnCollisionEnter2D(Collision2D collision)
     {
         _shouldFaceVelocityDirection = false;
+        SoundManager.instance.PlayClip(_hitClip, _audioSource);
+        Destroy(this);
     }
 }

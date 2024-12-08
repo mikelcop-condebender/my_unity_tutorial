@@ -825,8 +825,8 @@ MonoBehaviour:
   _angieBirdPositionOffset: 0.375
   _elasticPulledClip: {fileID: 8300000, guid: 9ce72b6f6b9d346d48c90f6907f370ff, type: 3}
   _elasticReleasedClips:
-  - {fileID: 8300000, guid: c448b5545636e48fdb36162bd9a825bb, type: 3}
-  - {fileID: 8300000, guid: c448b5545636e48fdb36162bd9a825bb, type: 3}
+  - {fileID: 8300000, guid: 2d3b4dc6101d3408e9e631a77e525f73, type: 3}
+  - {fileID: 8300000, guid: 2d3b4dc6101d3408e9e631a77e525f73, type: 3}
 --- !u!4 &507842839
 Transform:
   m_ObjectHideFlags: 0
