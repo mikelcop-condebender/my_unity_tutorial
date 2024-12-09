@@ -79,7 +79,6 @@ public class GameManager : MonoBehaviour
 
    private void RestartGame()
    {
-   Debug.Log("Lose Game");
-   SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+      SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
    }
 }
