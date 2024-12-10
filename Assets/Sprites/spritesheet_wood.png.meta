@@ -139,12 +139,12 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 780
-        y: 885
-        width: 70
-        height: 139
+        y: 880
+        width: 72
+        height: 144
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+      border: {x: 0, y: 4, z: 2, w: 0}
       customData: 
       outline: []
       physicsShape: []
@@ -160,9 +160,9 @@ TextureImporter:
       name: spritesheet_wood_2
       rect:
         serializedVersion: 2
-        x: 218
+        x: 220
         y: 734
-        width: 144
+        width: 139
         height: 219
       alignment: 0
       pivot: {x: 0.5, y: 0.5}

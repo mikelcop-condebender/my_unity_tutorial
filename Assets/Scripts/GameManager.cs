@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
    private int _usedNumberOfShots;
    private IconHandler _iconHandler;
    private List<Baddie> _baddies = new List<Baddie>();
+   
 
    private void Awake()
    {
@@ -25,9 +26,14 @@ public class GameManager : MonoBehaviour
         // Log the number of baddies found
       for (int i = 0; i < baddies.Length; i++)
       {
-         _baddies.Add(baddies[i]);
+         if(!baddies[i]._isFriend){ 
+            _baddies.Add(baddies[i]);
+         }
+         
       }
+      
    }
+
 
    public void UseShot(){
     _usedNumberOfShots++;

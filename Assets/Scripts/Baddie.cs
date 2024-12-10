@@ -7,6 +7,7 @@ public class Baddie : MonoBehaviour
     [SerializeField] private float _damageThreshold = 0.5f;
     [SerializeField] private GameObject _baddieDeathParticle;
     [SerializeField] private AudioClip _deathClip;
+    public bool _isFriend = false;
     private float _currentHealth;
 
     private void Awake()
@@ -17,10 +18,18 @@ public class Baddie : MonoBehaviour
     public void DamageBaddie(float damageAmount)
     {
         _currentHealth -= damageAmount;
+         Debug.Log($"Current Health: {_currentHealth}, Damage Amount: {damageAmount} Max Health: {_maxHealth}");
 
-        if(_currentHealth < _maxHealth)
+        if(_currentHealth <= 0)
         {
-            Die();
+            if(_isFriend){
+                Debug.Log("Remove one life");
+                GameManager.instance.UseShot();
+                Die();
+            }else{
+                Die();
+            }
+            
         }
     }
 
