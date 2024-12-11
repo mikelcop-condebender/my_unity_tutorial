@@ -6,6 +6,11 @@ public class IconHandler : MonoBehaviour
     [SerializeField] private Image[] _icons;
     [SerializeField] private Color _usedColor;
 
+    public int GetNumberOfIcons()
+    {
+        return _icons.Length;
+    }
+
     public void UseShot(int shotNumber){
         for (int i = 0; i < _icons.Length; i++)
         {

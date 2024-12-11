@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
    public static GameManager instance;
-   public int MaxNumberOfShots = 3;
+   public int MaxNumberOfShots;
    [SerializeField] private float _secondsToWaitBeforeDeathCheck = 3f; 
    [SerializeField] private GameObject _restartGameObject;
    [SerializeField] private SlingShotHandler _slingShotHandler;
@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
 
    private void Awake()
    {
+      
       if(instance == null)
       {
          instance = this;
@@ -31,6 +32,9 @@ public class GameManager : MonoBehaviour
          }
          
       }
+
+      MaxNumberOfShots = _iconHandler.GetNumberOfIcons();
+      Debug.Log(MaxNumberOfShots);
       
    }
 
@@ -83,8 +87,18 @@ public class GameManager : MonoBehaviour
       _slingShotHandler.enabled = false;
    }
 
-   private void RestartGame()
+    public void NextLevel()
    {
-      SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+      SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+   }
+
+   public void RestartGame()
+   {
+       SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+   }
+
+   public void ResetGame()
+   {
+      SceneManager.LoadScene(0);
    }
 }
